@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans 'Dashboard' %} | LMS{% endblock %}
+
+{% block content %}
+
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">{% trans 'Home' %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans 'Dashboard' %}</li>
+    </ol>
+</nav>
+
+{% include 'snippets/messages.html' %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="title-1">{% trans 'Dashboard' %}</h1>
+</div>
+
+<!-- =======================
+        COUNT CARDS
+======================= -->
+<div class="row users-count px-3">
+
+    <!-- Students -->
+    <div class="col-6 col-md-3 mb-3 px-2">
+        <div class="card-count p-3 shadow-sm bg-white rounded">
+            <h3><i class="fas fa-user-graduate text-primary"></i></h3>
+            <div class="text-right">
+                Students
+                <h2>{{ student_count }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lecturers -->
+    <div class="col-6 col-md-3 mb-3 px-2">
+        <div class="card-count p-3 shadow-sm bg-white rounded">
+            <h3><i class="fas fa-chalkboard-teacher text-warning"></i></h3>
+            <div class="text-right">
+                Lecturers
+                <h2>{{ lecturer_count }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admins -->
+    <div class="col-6 col-md-3 mb-3 px-2">
+        <div class="card-count p-3 shadow-sm bg-white rounded">
+            <h3><i class="fas fa-user-shield text-danger"></i></h3>
+            <div class="text-right">
+                Admins
+                <h2>{{ superuser_count }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sessions -->
+    <div class="col-6 col-md-3 mb-3 px-2">
+        <div class="card-count p-3 shadow-sm bg-white rounded">
+            <h3><i class="fas fa-calendar-alt text-success"></i></h3>
+            <div class="text-right">
+                Sessions
+                <h2>{{ total_sessions }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Semesters -->
+    <div class="col-6 col-md-3 mb-3 px-2">
+        <div class="card-count p-3 shadow-sm bg-white rounded">
+            <h3><i class="fas fa-book text-info"></i></h3>
+            <div class="text-right">
+                Semesters
+                <h2>{{ total_semesters }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- =======================
+        CHARTS
+======================= -->
+<div class="row px-2">
+
+    <!-- User Distribution Chart -->
+    <div class="col-md-6 p-2">
+        <div class="card p-3 shadow-sm">
+            <canvas id="userChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Gender Chart -->
+    <div class="col-md-6 p-2">
+        <div class="card p-3 shadow-sm">
+            <canvas id="genderChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Activity Log -->
+    <div class="col-md-6 p-2">
+        <div class="card p-3 shadow-sm h-100">
+            <h5 class="border-bottom pb-2">Latest Activities</h5>
+            <ul class="ps-2 small">
+                {% for log in logs %}
+                    <li>
+                        <strong>{{ log.user }}</strong> - {{ log.action }}
+                        <span class="text-muted small">({{ log.created_at }})</span>
+                    </li>
+                {% empty %}
+                    <li>No recent activity</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Recent News -->
+    <div class="col-md-6 p-2">
+        <div class="card p-3 shadow-sm h-100">
+            <h5 class="border-bottom pb-2">Recent News</h5>
+            <ul class="ps-2 small">
+                {% for news in recent_news %}
+                    <li>
+                        <strong>{{ news.title }}</strong>
+                        <span class="text-muted small">({{ news.upload_time }})</span>
+                    </li>
+                {% empty %}
+                    <li>No news available</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}
+
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // User Distribution Chart
+    new Chart(document.getElementById("userChart"), {
+        type: "bar",
+        data: {
+            labels: ["Students", "Lecturers", "Admins"],
+            datasets: [{
+                label: "Users",
+                data: [
+                    {{ student_count }},
+                    {{ lecturer_count }},
+                    {{ superuser_count }}
+                ],
+                backgroundColor: [
+                    "rgba(54, 162, 235, 0.6)",
+                    "rgba(255, 159, 64, 0.6)",
+                    "rgba(255, 99, 132, 0.6)"
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: "User Distribution"
+                }
+            }
+        }
+    });
+
+    // Gender Chart
+    new Chart(document.getElementById("genderChart"), {
+        type: "pie",
+        data: {
+            labels: ["Male", "Female"],
+            datasets: [{
+                data: [{{ males_count }}, {{ females_count }}],
+                backgroundColor: [
+                    "rgb(54, 162, 235)",
+                    "rgb(255, 99, 132)"
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: "Students Gender Distribution"
+                }
+            }
+        }
+    });
+
+});
+</script>
+{% endblock %}
