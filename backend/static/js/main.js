@@ -2,10 +2,17 @@
 
 // side navigation bar
 function toggleSidebar() {
-  document.getElementById("side-nav").classList.toggle("toggle-active");
-  document.getElementById("main").classList.toggle("toggle-active");
-  document.getElementById("top-navbar").classList.toggle("toggle-active");
-  document.querySelector(".manage-wrap").classList.toggle("toggle-active");
+
+  const sideNav = document.getElementById("side-nav");
+  const main = document.getElementById("main");
+  const topNavbar = document.getElementById("top-navbar");
+  const manageWrap = document.querySelector(".manage-wrap");
+
+  if (sideNav) sideNav.classList.toggle("toggle-active");
+  if (main) main.classList.toggle("toggle-active");
+  if (topNavbar) topNavbar.classList.toggle("toggle-active");
+  if (manageWrap) manageWrap.classList.toggle("toggle-active");
+
 }
 
 // #################################
