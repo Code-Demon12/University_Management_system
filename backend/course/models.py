@@ -68,12 +68,12 @@ class Program(models.Model):
 @receiver(post_save, sender=Program)
 def log_save(sender, instance, created, **kwargs):
     verb = "created" if created else "updated"
-    ActivityLog.objects.create(message=_(f"The program '{instance}' has been {verb}."))
+    ActivityLog.objects.create(action=_(f"The program '{instance}' has been {verb}."))
 
 
 @receiver(post_delete, sender=Program)
 def log_delete(sender, instance, **kwargs):
-    ActivityLog.objects.create(message=_(f"The program '{instance}' has been deleted."))
+    ActivityLog.objects.create(action=_(f"The program '{instance}' has been deleted."))
 
 
 class CourseManager(models.Manager):
@@ -135,12 +135,18 @@ pre_save.connect(course_pre_save_receiver, sender=Course)
 @receiver(post_save, sender=Course)
 def log_save(sender, instance, created, **kwargs):
     verb = "created" if created else "updated"
-    ActivityLog.objects.create(message=_(f"The course '{instance}' has been {verb}."))
+    ActivityLog.objects.create(
+        action=f"The program '{instance}' has been {verb}.",
+        user=None
+    )
 
 
 @receiver(post_delete, sender=Course)
 def log_delete(sender, instance, **kwargs):
-    ActivityLog.objects.create(message=_(f"The course '{instance}' has been deleted."))
+    ActivityLog.objects.create(
+        action=f"The course '{instance}' has been deleted.",
+        user=None
+    )
 
 
 class CourseAllocation(models.Model):
@@ -214,13 +220,13 @@ class Upload(models.Model):
 def log_save(sender, instance, created, **kwargs):
     if created:
         ActivityLog.objects.create(
-            message=_(
+            action=_(
                 f"The file '{instance.title}' has been uploaded to the course '{instance.course}'."
             )
         )
     else:
         ActivityLog.objects.create(
-            message=_(
+            action=_(
                 f"The file '{instance.title}' of the course '{instance.course}' has been updated."
             )
         )
@@ -229,7 +235,7 @@ def log_save(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=Upload)
 def log_delete(sender, instance, **kwargs):
     ActivityLog.objects.create(
-        message=_(
+        action=_(
             f"The file '{instance.title}' of the course '{instance.course}' has been deleted."
         )
     )
@@ -274,13 +280,13 @@ pre_save.connect(video_pre_save_receiver, sender=UploadVideo)
 def log_save(sender, instance, created, **kwargs):
     if created:
         ActivityLog.objects.create(
-            message=_(
+            action=_(
                 f"The video '{instance.title}' has been uploaded to the course {instance.course}."
             )
         )
     else:
         ActivityLog.objects.create(
-            message=_(
+            action=_(
                 f"The video '{instance.title}' of the course '{instance.course}' has been updated."
             )
         )
@@ -289,7 +295,7 @@ def log_save(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=UploadVideo)
 def log_delete(sender, instance, **kwargs):
     ActivityLog.objects.create(
-        message=_(
+        action=_(
             f"The video '{instance.title}' of the course '{instance.course}' has been deleted."
         )
     )

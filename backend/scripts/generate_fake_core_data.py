@@ -87,7 +87,6 @@ class ActivityLogFactory(DjangoModelFactory):
 
 
 def generate_fake_core_data(num_news_and_events: int, num_sessions: int, num_semesters: int, num_activity_logs: int) -> None:
-    """
     Generate fake data for core models: NewsAndEvents, Session, Semester, and ActivityLog.
 
     Args:
