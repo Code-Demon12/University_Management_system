@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
+from core.models import ActivityLog
 
 from reportlab.platypus import (
     SimpleDocTemplate,
@@ -71,7 +72,7 @@ def add_score_for(request, id):
     Shows a page where a lecturer will add score for students that
     are taking courses allocated to him in a specific semester and session
     """
-    current_session = Session.objects.get(is_current_session=True)
+    current_session = Session.objects.filter(is_current_session=True).first()
     current_semester = get_object_or_404(
         Semester, is_current_semester=True, session=current_session
     )
@@ -79,7 +80,10 @@ def add_score_for(request, id):
         courses = Course.objects.filter(
             allocated_course__lecturer__pk=request.user.id
         ).filter(semester=current_semester)
-        course = Course.objects.get(pk=id)
+        course = get_object_or_404(pk=id)
+        if request.user != course.allocated_course.lecturer and not request.user.is_superuser:
+            messages.error(request, "You are not allowed to manage this course.")
+            return HttpResponseRedirect(reverse_lazy("add_score"))
         # myclass = Class.objects.get(lecturer__pk=request.user.id)
         # myclass = get_object_or_404(Class, lecturer__pk=request.user.id)
 
@@ -88,12 +92,12 @@ def add_score_for(request, id):
         #  course__id=id).filter(
         #  student__allocated_student__lecturer__pk=request.user.id).filter(
         #  course__semester=current_semester)
-        students = (
-            TakenCourse.objects.filter(
-                course__allocated_course__lecturer__pk=request.user.id
-            )
-            .filter(course__id=id)
-            .filter(course__semester=current_semester)
+        students = TakenCourse.objects.select_related(
+            "student", "course"
+        ).filter(
+            course__allocated_course__lecturer__pk=request.user.id,
+            course__id=id,
+            course__semester=current_semester
         )
         context = {
             "title": "Submit Score",
@@ -200,6 +204,11 @@ def add_score_for(request, id):
             # semester=current_semester, level=student.student.level)
 
         messages.success(request, "Successfully Recorded! ")
+
+        ActivityLog.objects.create(
+            user=request.user,
+            action=f"Recorded scores for course {course.title}"
+        )
         return HttpResponseRedirect(reverse_lazy("add_score_for", kwargs={"id": id}))
     return HttpResponseRedirect(reverse_lazy("add_score_for", kwargs={"id": id}))
 
@@ -210,7 +219,7 @@ def add_score_for(request, id):
 @login_required
 @student_required
 def grade_result(request):
-    student = Student.objects.get(student__pk=request.user.id)
+    student = get_object_or_404(student__pk=request.user.id)
     courses = TakenCourse.objects.filter(student__student__pk=request.user.id).filter(
         course__level=student.level
     )
@@ -266,7 +275,7 @@ def grade_result(request):
 @login_required
 @student_required
 def assessment_result(request):
-    student = Student.objects.get(student__pk=request.user.id)
+    student = get_object_or_404(student__pk=request.user.id)
     courses = TakenCourse.objects.filter(
         student__student__pk=request.user.id, course__level=student.level
     )
@@ -284,8 +293,8 @@ def assessment_result(request):
 @login_required
 @lecturer_required
 def result_sheet_pdf_view(request, id):
-    current_semester = Semester.objects.get(is_current_semester=True)
-    current_session = Session.objects.get(is_current_session=True)
+    current_semester = get_object_or_404(is_current_semester=True)
+    current_session = Session.objects.filter(is_current_session=True).first()
     result = TakenCourse.objects.filter(course__pk=id)
     course = get_object_or_404(Course, id=id)
     no_of_pass = TakenCourse.objects.filter(course__pk=id, comment="PASS").count()
@@ -456,8 +465,8 @@ def result_sheet_pdf_view(request, id):
 @login_required
 @student_required
 def course_registration_form(request):
-    current_semester = Semester.objects.get(is_current_semester=True)
-    current_session = Session.objects.get(is_current_session=True)
+    current_semester = get_object_or_404(is_current_semester=True)
+    current_session = Session.objects.filter(is_current_session=True).first()
     courses = TakenCourse.objects.filter(student__student__id=request.user.id)
     fname = request.user.username + ".pdf"
     fname = fname.replace("/", "-")
@@ -512,7 +521,7 @@ def course_registration_form(request):
     title = "<b><u>STUDENT COURSE REGISTRATION FORM</u></b>"
     title = Paragraph(title.upper(), normal)
     Story.append(title)
-    student = Student.objects.get(student__pk=request.user.id)
+    student = get_object_or_404(student__pk=request.user.id)
 
     style_right = ParagraphStyle(name="right", parent=styles["Normal"])
     tbl_data = [
@@ -725,7 +734,7 @@ def course_registration_form(request):
     certification.fontName = "Helvetica"
     certification.fontSize = 8
     certification.leading = 18
-    student = Student.objects.get(student__pk=request.user.id)
+    student = get_object_or_404(student__pk=request.user.id)
     certification_text = (
         "CERTIFICATION OF REGISTRATION: I certify that <b>"
         + str(request.user.get_full_name.upper())

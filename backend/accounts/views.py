@@ -218,13 +218,9 @@ def profile_single(request, id):
 @login_required
 @admin_required
 def admin_panel(request):
-    context = {
-        "title": request.user.get_full_name,
-        "student_count": User.objects.filter(is_student=True).count(),
-        "lecturer_count": User.objects.filter(is_lecturer=True).count(),
-        "parent_count": User.objects.filter(is_parent=True).count(),
-    }
-    return render(request, "setting/admin_panel.html", context)
+    return render(
+        request, "setting/admin_panel.html", {"title": request.user.get_full_name}
+    )
 
 
 # ########################################################
@@ -544,51 +540,3 @@ class ParentAdd(CreateView):
 #             return redirect('student_list')
 #     else:
 #         form = ParentAddForm(request.POST)
-
-from django.contrib.auth import authenticate, login
-from .utils import set_user_otp, send_otp_email
-from django.utils import timezone
-
-def custom_login(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            otp = set_user_otp(user)
-            send_otp_email(user, otp)
-
-            request.session["pre_auth_user"] = user.id
-            return redirect("verify_otp")
-
-        else:
-            messages.error(request, "Invalid credentials")
-
-    return render(request, "registration/login.html")
-
-def verify_otp(request):
-    user_id = request.session.get("pre_auth_user")
-
-    if not user_id:
-        return redirect("login")
-
-    user = User.objects.get(id=user_id)
-
-    if request.method == "POST":
-        entered_otp = request.POST.get("otp")
-
-        if (
-            user.otp_code == entered_otp
-            and user.otp_created_at
-            and (timezone.now() - user.otp_created_at).seconds < 300
-        ):
-            login(request, user)
-            user.otp_code = None
-            user.save()
-            return redirect("profile")
-        else:
-            messages.error(request, "Invalid or expired OTP")
-
-    return render(request, "accounts/verify_otp.html")

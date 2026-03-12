@@ -1,23 +1,42 @@
 from django.contrib import admin
-from django.contrib.auth.models import Group
-
 from .models import TakenCourse, Result
 
 
-class ScoreAdmin(admin.ModelAdmin):
-    list_display = [
+@admin.register(TakenCourse)
+class TakenCourseAdmin(admin.ModelAdmin):
+
+    list_display = (
         "student",
         "course",
-        "assignment",
-        "mid_exam",
-        "quiz",
-        "attendance",
-        "final_exam",
         "total",
         "grade",
         "comment",
-    ]
+    )
+
+    list_filter = (
+        "course",
+        "grade",
+        "comment",
+    )
+
+    search_fields = (
+        "student__student__username",
+        "course__title",
+    )
 
 
-admin.site.register(TakenCourse, ScoreAdmin)
-admin.site.register(Result)
+@admin.register(Result)
+class ResultAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "student",
+        "semester",
+        "level",
+        "gpa",
+        "cgpa",
+    )
+
+    list_filter = (
+        "semester",
+        "level",
+    )

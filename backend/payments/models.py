@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 import uuid
 
+from django.utils import timezone
+
 
 class Invoice(models.Model):
 
@@ -18,7 +20,7 @@ class Invoice(models.Model):
 
     payment_complete = models.BooleanField(default=False)
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

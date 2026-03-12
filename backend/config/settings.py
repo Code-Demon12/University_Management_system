@@ -52,6 +52,7 @@ THIRD_PARTY_APPS = [
     "crispy_bootstrap5",
     "rest_framework",
     "django_filters",
+    "django_extensions",
 ]
 
 # Custom apps

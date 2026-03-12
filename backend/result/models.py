@@ -10,8 +10,8 @@ YEARS = (
     (2, "2"),
     (3, "3"),
     (4, "4"),
-    (4, "5"),
-    (4, "6"),
+    (5, "5"),
+    (6, "6"),
 )
 
 # LEVEL_COURSE = "Level course"
@@ -75,15 +75,19 @@ class TakenCourseManager(models.Manager):
     def new(self, user=None):
         user_obj = None
         if user is not None:
-            if user.is_authenticated():
+            if user.is_authenticated:
                 user_obj = user
         return self.model.objects.create(user=user_obj)
 
 
 class TakenCourse(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, db_index=True)
+
     course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, related_name="taken_courses"
+        Course,
+        on_delete=models.CASCADE,
+        related_name="taken_courses",
+        db_index=True
     )
     assignment = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
     mid_exam = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
@@ -183,7 +187,7 @@ class TakenCourse(models.Model):
         return p
 
     def calculate_gpa(self, total_credit_in_semester):
-        current_semester = Semester.objects.get(is_current_semester=True)
+        current_semester = Semester.objects.filter(is_current_semester=True).first()
         student = TakenCourse.objects.filter(
             student=self.student,
             course__level=self.student.level,
@@ -278,7 +282,7 @@ class TakenCourse(models.Model):
 
 
 class Result(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, db_index=True)
     gpa = models.FloatField(null=True)
     cgpa = models.FloatField(null=True)
     semester = models.CharField(max_length=100, choices=SEMESTER)

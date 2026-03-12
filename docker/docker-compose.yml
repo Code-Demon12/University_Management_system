@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+
+  django:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: django_lms
+    volumes:
+      - ../backend:/app/backend
+    ports:
+      - "8000:8000"

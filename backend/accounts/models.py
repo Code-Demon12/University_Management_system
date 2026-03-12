@@ -75,9 +75,6 @@ class User(AbstractUser):
     gender = models.CharField(max_length=1, choices=GENDERS, blank=True, null=True)
     phone = models.CharField(max_length=60, blank=True, null=True)
     address = models.CharField(max_length=60, blank=True, null=True)
-    otp_code = models.CharField(max_length=6, blank=True, null=True)
-    otp_created_at = models.DateTimeField(blank=True, null=True)
-    is_email_verified = models.BooleanField(default=False)
     picture = models.ImageField(
         upload_to="profile_pictures/%y/%m/%d/", default="default.png", null=True
     )
@@ -188,6 +185,11 @@ class Parent(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     student = models.OneToOneField(Student, null=True, on_delete=models.SET_NULL)
+    first_name = models.CharField(max_length=120)
+    last_name = models.CharField(max_length=120)
+    phone = models.CharField(max_length=60, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+
     # What is the relationship between the student and
     # the parent (i.e. father, mother, brother, sister)
     relation_ship = models.TextField(choices=RELATION_SHIP, blank=True)

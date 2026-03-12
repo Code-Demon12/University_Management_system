@@ -1,5 +1,5 @@
 from django.urls import path, include
-from django.contrib.auth.views import LogoutView
+
 # from django.contrib.auth.views import (
 #     PasswordResetView,
 #     PasswordResetDoneView,
@@ -27,9 +27,7 @@ from .views import (
     validate_username,
     register,
     render_lecturer_pdf_list,  # new
-    render_student_pdf_list, 
-      custom_login, 
-      verify_otp # new
+    render_student_pdf_list,  # new
 )
 
 # from .forms import EmailValidationOnForgotPassword
@@ -64,8 +62,31 @@ urlpatterns = [
     ),  # new
     path(
         "create_students_pdf_list/", render_student_pdf_list, name="student_list_pdf"
-    ),
-    path("login/", custom_login, name="login"),
-    path("verify-otp/", verify_otp, name="verify_otp"),
-    path("logout/", LogoutView.as_view(next_page="/"), name="logout"),
+    ),  # new
+    # path('add-student/', StudentAddView.as_view(), name='add_student'),
+    # path('programs/course/delete/<int:pk>/', course_delete, name='delete_course'),
+    # Setting urls
+    # path('profile/<int:pk>/edit/', profileUpdateView, name='edit_profile'),
+    # path('profile/<int:pk>/change-password/', changePasswordView, name='change_password'),
+    # ################################################################
+    # path('login/', LoginView.as_view(), name='login'),
+    # path('logout/', LogoutView.as_view(), name='logout', kwargs={'next_page': '/'}),
+    # path('password-reset/', PasswordResetView.as_view(
+    #     form_class=EmailValidationOnForgotPassword,
+    #     template_name='registration/password_reset.html'
+    # ),
+    #      name='password_reset'),
+    # path('password-reset/done/', PasswordResetDoneView.as_view(
+    #     template_name='registration/password_reset_done.html'
+    # ),
+    #      name='password_reset_done'),
+    # path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(
+    #     template_name='registration/password_reset_confirm.html'
+    # ),
+    #      name='password_reset_confirm'),
+    # path('password-reset-complete/', PasswordResetCompleteView.as_view(
+    #     template_name='registration/password_reset_complete.html'
+    # ),
+    #      name='password_reset_complete')
+    # ################################################################
 ]

@@ -23,7 +23,27 @@
     <!-- <script src="https://js.stripe.com/v3/"></script> -->
     {% block header %}{% endblock %}
 </head>
+<!-- Chatbot Icon -->
+<div id="chatbot-icon">
+    <i class="fas fa-comments"></i>
+</div>
 
+<!-- Chatbot Window -->
+<div id="chatbot-box">
+
+    <div id="chatbot-header">
+        Help Assistant
+        <span id="chatbot-close">✖</span>
+    </div>
+
+    <div id="chatbot-messages"></div>
+
+    <div id="chatbot-input-area">
+        <input type="text" id="chatbot-input" placeholder="Ask something...">
+        <button id="chatbot-send">Send</button>
+    </div>
+
+</div>
 <body>
     {% block sidebar %}
         {% include 'aside.html' %}
