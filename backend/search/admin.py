@@ -1,3 +1,20 @@
 from django.contrib import admin
+from .models import SearchQuery
 
-# Register your models here.
+
+@admin.register(SearchQuery)
+class SearchQueryAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "query",
+        "user",
+        "created_at",
+    )
+
+    search_fields = (
+        "query",
+    )
+
+    list_filter = (
+        "created_at",
+    )

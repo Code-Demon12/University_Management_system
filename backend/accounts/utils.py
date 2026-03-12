@@ -3,8 +3,6 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 import threading
 from core.utils import send_html_email
-import random
-from django.utils import timezone
 
 
 def generate_password():
@@ -60,24 +58,5 @@ def send_new_account_email(user, password):
         "recipient_list": [user.email],
         "template_name": template_name,
         "context": {"user": user, "password": password},
-    }
-    EmailThread(**email).start()
-
-def generate_otp():
-    return str(random.randint(100000, 999999))
-
-def set_user_otp(user):
-    otp = generate_otp()
-    user.otp_code = otp
-    user.otp_created_at = timezone.now()
-    user.save()
-    return otp
-
-def send_otp_email(user, otp):
-    email = {
-        "subject": "Your OTP Verification Code",
-        "recipient_list": [user.email],
-        "template_name": "accounts/email/otp_email.html",
-        "context": {"user": user, "otp": otp},
     }
     EmailThread(**email).start()

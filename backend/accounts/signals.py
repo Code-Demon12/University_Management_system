@@ -1,5 +1,3 @@
-from backend.accounts.tests.test_decorators import User
-
 from .utils import (
     generate_student_credentials,
     generate_lecturer_credentials,
@@ -16,11 +14,7 @@ def post_save_account_receiver(sender, instance=None, created=False, *args, **kw
             username, password = generate_student_credentials()
             instance.username = username
             instance.set_password(password)
-            User.objects.filter(pk=instance.pk).update(
-                username=username
-            )
-            instance.set_password(password)
-            instance.save(update_fields=["password"])
+            instance.save()
             # Send email with the generated credentials
             send_new_account_email(instance, password)
 
@@ -28,9 +22,6 @@ def post_save_account_receiver(sender, instance=None, created=False, *args, **kw
             username, password = generate_lecturer_credentials()
             instance.username = username
             instance.set_password(password)
-            User.objects.filter(pk=instance.pk).update(
-                username=username,
-                password=instance.password
-            )
+            instance.save()
             # Send email with the generated credentials
             send_new_account_email(instance, password)

@@ -4,6 +4,7 @@ from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 
 NEWS = _("News")
@@ -55,7 +56,8 @@ class NewsAndEventsManager(models.Manager):
 
 
 class NewsAndEvents(models.Model):
-    title = models.CharField(max_length=200, db_index=True)
+    title = models.CharField(max_length=200, default="Untitled")
+    updated_date = models.DateTimeField(default=timezone.now)
     summary = models.TextField(max_length=200, blank=True, null=True)
     posted_as = models.CharField(choices=POST, max_length=10, db_index=True)
 
@@ -104,7 +106,7 @@ class ActivityLog(models.Model):
         null=True,
         blank=True
     )
-    action = models.CharField(max_length=255)
+    action = models.CharField(max_length=255, default="system")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
