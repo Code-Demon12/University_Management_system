@@ -4,13 +4,15 @@ from django.views.decorators.csrf import csrf_exempt
 from openai import OpenAI
 from django.conf import settings
 
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
-
+def get_openai_client():
+    return OpenAI(api_key=settings.OPENAI_API_KEY)
 
 @csrf_exempt
 def ai_chatbot(request):
 
     # Only accept POST
+    client = get_openai_client()
+
     if request.method != "POST":
         return JsonResponse({"error": "POST request required"}, status=400)
 
