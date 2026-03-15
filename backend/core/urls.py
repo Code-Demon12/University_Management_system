@@ -23,7 +23,7 @@ from .views import (
 urlpatterns = [
     # Accounts url
     path("", home, name="home"),
-    path("ai-chatbot/", ai_chatbot, name="ai_chatbot"),
+    # path("ai-chatbot/", ai_chatbot, name="ai_chatbot"),
     path("add_item/", post_add, name="add_item"),
     path("item/<int:pk>/edit/", edit_post, name="edit_post"),
     path("item/<int:pk>/delete/", delete_post, name="delete_post"),
