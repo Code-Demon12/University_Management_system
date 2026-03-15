@@ -11,7 +11,7 @@
     <title>{% block title %}DjangoSMS{% endblock title %}</title>
 
     <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
-
+    <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
     <!-- Fontawesome icons -->
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/fontawesome-6.5.1/css/all.min.css' %}">
 
@@ -66,6 +66,7 @@
     <script type="text/javascript" src="{% static 'vendor/bootstrap-5.3.2/js/bootstrap.bundle.min.js' %}"></script>
 
     <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/chatbot.js' %}"></script>
 
     {% block js %}
     {% endblock js %}

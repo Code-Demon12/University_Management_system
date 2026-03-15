@@ -1,45 +1,38 @@
-from django.http import JsonResponse
 import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from openai import OpenAI
+from django.conf import settings
+
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 
-def get_bot_response(message):
+@csrf_exempt
+def ai_chatbot(request):
 
-    message = message.lower()
+    # Only accept POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required"}, status=400)
 
-    if "course" in message:
-        return "You can find courses under Programs → Courses."
-
-    elif "program" in message:
-        return "All programs are listed in the Programs section."
-
-    elif "quiz" in message:
-        return "Quizzes are available in the Quiz section."
-
-    elif "result" in message:
-        return "Check your results in the Result section."
-
-    elif "register" in message or "signup" in message:
-        return "To create an account, click the Register button on the login page."
-
-    elif "login" in message:
-        return "Enter your username and password on the login page."
-
-    elif "news" in message or "event" in message:
-        return "Latest news and events are available on the homepage."
-
-    elif "help" in message:
-        return "You can ask me about courses, quizzes, programs, results, login or registration."
-
-    else:
-        return "Sorry, I couldn't understand. Please ask about courses, programs, quizzes or results."
-
-
-def chatbot_api(request):
-
-    if request.method == "POST":
+    try:
         data = json.loads(request.body)
-        message = data.get("message")
+        user_message = data.get("message", "")
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-        response = get_bot_response(message)
+    system_prompt = """
+    You are an AI assistant for a University Management System.
+    Help students with courses, semesters, exams and platform usage.
+    """
 
-        return JsonResponse({"reply": response})
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message}
+        ]
+    )
+
+    reply = response.choices[0].message.content
+
+    return JsonResponse({"reply": reply})

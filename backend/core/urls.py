@@ -1,9 +1,10 @@
 from django.urls import path
 
-from core.chatbot import chatbot_api
+from core.chatbot import ai_chatbot
 
 from .views import (
     home_view,
+    home,
     post_add,
     edit_post,
     delete_post,
@@ -21,7 +22,8 @@ from .views import (
 
 urlpatterns = [
     # Accounts url
-    path("", home_view, name="home"),
+    path("", home, name="home"),
+    path("ai-chatbot/", ai_chatbot, name="ai_chatbot"),
     path("add_item/", post_add, name="add_item"),
     path("item/<int:pk>/edit/", edit_post, name="edit_post"),
     path("item/<int:pk>/delete/", delete_post, name="delete_post"),
@@ -34,5 +36,4 @@ urlpatterns = [
     path("semester/<int:pk>/edit/", semester_update_view, name="edit_semester"),
     path("semester/<int:pk>/delete/", semester_delete_view, name="delete_semester"),
     path("dashboard/", dashboard_view, name="dashboard"),
-    path("chatbot/", chatbot_api, name="chatbot"),
 ]

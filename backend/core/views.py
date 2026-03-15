@@ -8,9 +8,18 @@ from .forms import SessionForm, SemesterForm, NewsAndEventsForm
 from .models import NewsAndEvents, ActivityLog, Session, Semester
 
 
-# ########################################################
-# News & Events
-# ########################################################
+def home(request):
+
+    context = {
+        "student_count": User.objects.filter(is_student=True).count(),
+        "lecturer_count": User.objects.filter(is_lecturer=True).count(),
+        "total_sessions": Session.objects.count(),
+        "total_semesters": Semester.objects.count(),
+        "recent_news": NewsAndEvents.objects.all().order_by("-updated_date")[:3],
+    }
+
+    return render(request, "home.html", context)
+
 @login_required
 def home_view(request):
     items = NewsAndEvents.objects.all().order_by("-updated_date")
