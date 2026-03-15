@@ -165,11 +165,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-from dotenv import load_dotenv
+import os
 
-load_dotenv()
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
