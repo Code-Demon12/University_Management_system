@@ -32,3 +32,4 @@ django-extensions
 gunicorn
 whitenoise
 openai
+python-dotenv
